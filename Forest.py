@@ -2,95 +2,118 @@ import pygame
 import time
 import random
 import sys
+import Spreadsheet
 
 # Initializing Pygame
 pygame.init()
 
+SCREEN_WIDTH = 1200
+SCREEN_HEIGHT = 600
+
 # Setting up the screen
-window = pygame.display.set_mode((1200, 600))
+window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Forest Runner")
 clock = pygame.time.Clock()
-running = True
 
 # Loading background image
 background_img = pygame.image.load("Forest_pic.JPG")
 # Scaling to fit the screen
 background_img = pygame.transform.scale(background_img, (1200, 600))
 
+# Loading sheets for idle and running
+sprite_sheet_image_idle = pygame.image.load("fighter_sheets/Idle.png").convert_alpha()
+sprite_sheet_image_run = pygame.image.load("fighter_sheets/Run.png").convert_alpha()
 
-def get_image(sheet, x, y, width, height, scale):
-    image = pygame.Surface((width, height), pygame.SRCALPHA)
-    image.blit(sheet, (0, 0), (x, y, width, height))
+# Getting and setting image of character sprite in spritesheets
+sprite_sheet_idle = Spreadsheet.SpriteSheet(sprite_sheet_image_idle)
+sprite_sheet_run = Spreadsheet.SpriteSheet(sprite_sheet_image_run)
 
-    if scale != 1:
-        new_width = int(width * scale)
-        new_height = int(height * scale)
-        image = pygame.transform.scale(image,(new_width, new_height))
-    return image
+# Sprite list that holds action spriteshees
+sprite_list = [sprite_sheet_idle, sprite_sheet_run]
 
-# Loading sprite sheet
-sprite_sheet = pygame.image.load("Idle.png").convert_alpha()
+BLACK = (0, 0, 0)
 
-class Runner(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        # Setting up sprite height and width
-        self.sprite_width = 130
-        self.sprite_height = 127
-        
-        # Loading running frames
-        self.running_frames = []
-        scale = 1.8
-        for i in range(6):
-            frame = get_image(sprite_sheet, i * self.sprite_width, 0, self.sprite_width, self.sprite_height, scale)
-            self.running_frames.append(frame)
-        self.current_frame = 0
-        self.image = self.running_frames[self.current_frame]
-        self.rect = self.image.get_rect()
-        self.rect.bottomleft = (0, 600) # Posiitions the character.
+# 130 x 127
 
-        self.position = self.rect.bottomleft
+# Creating animation list
+animation_list = []
+animation_steps = [1,8]
+action = 0
+last_update = pygame.time.get_ticks()
+animation_cooldown = 150
+frame = 0
 
 
-        self.last_update = pygame.time.get_ticks()
-        self.frame_rate = 100
+# Handling controls and movement
+keys = pygame.key.get_pressed()
+vel_x = 0
+
+# Looping through amount of steps within each sprite sheet
+for i in range(len(animation_steps)):
+    temp_list = []
+    for j in range(animation_steps[i]):
+        temp_list.append(sprite_list[i].get_image(j, 130, 127, 1.8, BLACK))
     
-    def update(self):   # Animation Settings
-        current_time = pygame.time.get_ticks()
-        if current_time - self.last_update > self.frame_rate:
-            self.last_update = current_time
-            
-            # Saving bottom position (ensuring idle position)
-            bottom = self.rect.bottom
-            left = self.rect.left
-            
-            # Updating the frame
-            self.current_frame = (self.current_frame + 1) % len(self.running_frames)
-            self.image = self.running_frames[self.current_frame]
-
-            # Getting the new rect and restoring the position
-            self.rect = self.image.get_rect()
-            self.rect.bottomleft = self.position
+    animation_list.append(temp_list)
 
 
-all_sprites = pygame.sprite.Group()
-player = Runner()
+c_x = 0
+c_y = 369
+facing_right = True
+speed = 5
 
-all_sprites.add(player)
-    
 
+running = True
 while running:
+    window.blit(background_img, (0, 0))
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-            pygame.quit()
-            sys.exit()
-    all_sprites.update()
-    window.blit(background_img, (0, 0))
-    all_sprites.draw(window)
 
+    # Storing key pressed state
+    keys = pygame.key.get_pressed()
+
+    action = 0 # Defualt action idle
+
+    # Controlling the Fighter
+    if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+        c_x += speed
+        action = 1
+        facing_right = True
+    elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
+        c_x -= speed
+        action = 1
+        facing_right = False
+    
+    
+    # Update animation
+    current_time = pygame.time.get_ticks()
+    if current_time - last_update >= animation_cooldown:
+        frame += 1
+        last_update = current_time
+        if frame >= animation_cooldown:
+            frame = 0
+
+    if frame >= animation_steps[action]:
+        frame = 0
+
+    # Getting current frame from animation list
+    current_frame = animation_list[action][frame]
+
+    # Flip the sprite
+    if not facing_right:
+        current_frame = pygame.transform.flip(current_frame, True, False).convert_alpha()
+    
+    window.blit(current_frame, (c_x, c_y))
+    
+
+    # Displaying Character
     pygame.display.update()
     clock.tick(60)
+
+
 pygame.quit()
 sys.exit()
+
 
