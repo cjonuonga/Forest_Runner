@@ -27,12 +27,13 @@ running = True
 while running:
     window.blit(background_img, (0, 0))
 
-    for event in pygame.event.get():
+    events = pygame.event.get()
+    for event in events:
         if event.type == pygame.QUIT:
             running = False
 
     # Update character/fighter movements and draw in window
-    fighter.update()
+    fighter.update(events)
     fighter.draw()
     
 

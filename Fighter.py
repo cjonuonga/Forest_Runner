@@ -6,19 +6,21 @@ class Fighter:
 
         self.window = window
         # Loading sheets for idle and running
-        self.sprite_sheet_image_idle = pygame.image.load("fighter_sheets/Idle.png").convert_alpha()
-        self.sprite_sheet_image_run = pygame.image.load("fighter_sheets/Run.png").convert_alpha()
+        self.sprite_sheet_image_idle = pygame.image.load("Forest_Runner_Sprites/Fighter/Idle.png").convert_alpha()
+        self.sprite_sheet_image_run = pygame.image.load("Forest_Runner_Sprites/Fighter/Run.png").convert_alpha()
+        self.sprite_sheet_image_jump = pygame.image.load("Forest_Runner_Sprites/Fighter/Jump.png").convert_alpha()
 
         # Getting and setting image of character sprite in spritesheets
         self.sprite_sheet_idle = Spreadsheet.SpriteSheet(self.sprite_sheet_image_idle)
         self.sprite_sheet_run = Spreadsheet.SpriteSheet(self.sprite_sheet_image_run)
+        self.sprite_sheet_jump = Spreadsheet.SpriteSheet(self.sprite_sheet_image_jump)
 
         # Sprite list that holds action spritesheets
-        self.sprite_list = [self.sprite_sheet_idle, self.sprite_sheet_run]
+        self.sprite_list = [self.sprite_sheet_idle, self.sprite_sheet_run, self.sprite_sheet_jump]
 
         # Creating animation list
         self.animation_list = []
-        self.animation_steps = [1,8]
+        self.animation_steps = [1, 8, 10]
         self.last_update = pygame.time.get_ticks()
         self.animation_cooldown = 150
         self.frame = 0
@@ -28,6 +30,9 @@ class Fighter:
         self.c_x = 0
         self.c_y = 369
         self.facing_right = True
+        self.is_jumping = False
+        self.jump_height = 10
+        self.is_falling = False
         self.speed = 5
 
         vel_x = 0
@@ -42,10 +47,32 @@ class Fighter:
     
     
     
-    def update(self):
+    def update(self, events):
         self.keys = pygame.key.get_pressed()
 
         self.action = 0
+
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE or event.key == pygame.K_w:
+                    self.is_jumping = True
+                    self.jump_height = 10
+                    
+        if self.is_jumping:
+            self.action = 2
+            self.neg = 1
+            if self.jump_height >= -10:
+                self.neg = 1
+                if self.jump_height < 0:
+                    self.neg = -1
+                self.c_y -= (self.jump_height ** 2) * 0.5 * self.neg  # Parabolic jump
+                self.jump_height -= 1
+
+                if self.jump_height < -10:
+                    self.is_jumping = False
+                    self.jump_height = 10
+                    self.c_y = 369
+
 
         if self.keys[pygame.K_d] or self.keys[pygame.K_RIGHT]:
             self.c_x += self.speed
@@ -55,6 +82,7 @@ class Fighter:
             self.c_x -= self.speed
             self.action = 1
             self.facing_right = False
+
         
         
         self.current_time = pygame.time.get_ticks()
