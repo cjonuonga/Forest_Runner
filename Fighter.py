@@ -9,18 +9,20 @@ class Fighter:
         self.sprite_sheet_image_idle = pygame.image.load("Forest_Runner_Sprites/Fighter/Idle.png").convert_alpha()
         self.sprite_sheet_image_run = pygame.image.load("Forest_Runner_Sprites/Fighter/Run.png").convert_alpha()
         self.sprite_sheet_image_jump = pygame.image.load("Forest_Runner_Sprites/Fighter/Jump.png").convert_alpha()
+        self.sprite_sheet_image_attack_1 = pygame.image.load("Forest_Runner_Sprites/Fighter/Attack_1.png").convert_alpha()
 
         # Getting and setting image of character sprite in spritesheets
         self.sprite_sheet_idle = Spreadsheet.SpriteSheet(self.sprite_sheet_image_idle)
         self.sprite_sheet_run = Spreadsheet.SpriteSheet(self.sprite_sheet_image_run)
         self.sprite_sheet_jump = Spreadsheet.SpriteSheet(self.sprite_sheet_image_jump)
+        self.sprite_sheet_attack_1 = Spreadsheet.SpriteSheet(self.sprite_sheet_image_attack_1)
 
         # Sprite list that holds action spritesheets
-        self.sprite_list = [self.sprite_sheet_idle, self.sprite_sheet_run, self.sprite_sheet_jump]
+        self.sprite_list = [self.sprite_sheet_idle, self.sprite_sheet_run, self.sprite_sheet_jump, self.sprite_sheet_attack_1]
 
         # Creating animation list
         self.animation_list = []
-        self.animation_steps = [1, 8, 10]
+        self.animation_steps = [1, 8, 10, 4]
         self.last_update = pygame.time.get_ticks()
         self.animation_cooldown = 150
         self.frame = 0
@@ -33,6 +35,9 @@ class Fighter:
         self.is_jumping = False
         self.jump_height = 10
         self.is_falling = False
+        self.is_attacking = False
+        self.attack_timer = 0
+        self.attack_duration = 20 # milliseconds
         self.speed = 5
 
         vel_x = 0
@@ -52,6 +57,27 @@ class Fighter:
 
         self.action = 0
 
+        # Attack 1 Functionality
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_f:
+                    self.is_attacking = True
+                    self.attack_timer = 0
+                    self.frame = 0
+        
+        if self.is_attacking:
+            self.action = 3
+            self.attack_timer += 1
+
+            if self.attack_timer >= self.attack_duration or self.frame >= self.animation_steps[3] - 1:
+                self.is_attacking = False
+                self.attack_timer = 0
+            
+
+
+
+
+        # Jumping Functionality
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE or event.key == pygame.K_w:
@@ -73,7 +99,9 @@ class Fighter:
                     self.jump_height = 10
                     self.c_y = 369
 
+        
 
+        # Running Functionality
         if self.keys[pygame.K_d] or self.keys[pygame.K_RIGHT]:
             self.c_x += self.speed
             self.action = 1
@@ -94,6 +122,9 @@ class Fighter:
         
         if self.frame >= self.animation_steps[self.action]:
             self.frame = 0
+
+            if self.action == 3:
+                self.is_attacking = False
 
     def draw(self):
         self.current_frame = self.animation_list[self.action][self.frame]
