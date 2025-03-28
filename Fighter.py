@@ -24,30 +24,28 @@ class Fighter:
         # Sprite list that holds action spritesheets
         self.sprite_list = [self.sprite_sheet_idle, self.sprite_sheet_run, self.sprite_sheet_jump, self.sprite_sheet_attack_1, self.sprite_sheet_attack_2, self.sprite_sheet_attack_3]
 
-        # Creating animation list
-        self.animation_list = []
-        self.animation_steps = [1, 8, 10, 4, 3, 4]
+        self.animation_list = [] # List that holds animations
+        self.animation_steps = [1, 8, 10, 4, 3, 4] # List that holds the amount of frames within each animation
         self.last_update = pygame.time.get_ticks()
-        self.animation_cooldown = 150
-        self.frame = 0
+        self.animation_cooldown = 150 # Cooldown time between each animation
+        self.frame = 0 # Init Frame counter so we start at the beginning of each animation
         self.BLACK = (0, 0, 0)
-        self.action = 0
-        # Fighter (character position)
-        self.c_x = 0
-        self.c_y = 369
-        self.facing_right = True
-        self.is_jumping = False
-        self.jump_height = 10
-        self.is_falling = False
-        self.is_attacking = False
-        self.current_attack = 0
-        self.max_frames = 0
-        self.attack_timer = 0
-        self.attack_duration = 20 # milliseconds
-        self.speed = 5
+        self.action = 0 # Action number represents animation type (run, jump etc.)
+        self.c_x = 540 # Player positioning
+        self.c_y = 369 # Player positioning
+        self.facing_right = True # Tracking facing position state
+        self.is_jumping = False # Tracking jumping state
+        self.jump_height = 10 # Initialize inital jump height
+        self.is_falling = False # Tracking falling state
+        self.is_attacking = False # Tracking attack state
+        self.current_attack = 0 # Tracking attack type (jab l, jab r, kick)
+        self.max_frames = 0 # Tracking maximum amount of frames in animation
+        self.attack_timer = 0 # Tracking amount of time for each attack animation
+        self.attack_duration = 20 # length of attack milliseconds
+        self.speed = 5 # Player running speed
 
-        vel_x = 0
 
+        # Populating animation list
         for i in range(len(self.animation_steps)):
             self.temp_list = []
             for j in range(self.animation_steps[i]):
@@ -63,7 +61,7 @@ class Fighter:
 
         self.action = 0
 
-        # Attack 1 Functionality
+        # Attack 1,2 and 3 Functionality
         if not self.is_attacking:
             for event in events:
                 if event.type == pygame.KEYDOWN:
@@ -102,7 +100,7 @@ class Fighter:
             self.attack_timer += 1
 
 
-
+            
             if self.attack_timer >= self.attack_duration or self.frame >= self.max_frames - 1:
                 self.is_attacking = False
                 self.attack_timer = 0
@@ -142,9 +140,11 @@ class Fighter:
             self.c_x -= self.speed
             self.action = 1
             self.facing_right = False
+        
+            
 
         
-        
+        # Updating animation
         self.current_time = pygame.time.get_ticks()
         if self.current_time - self.last_update >= self.animation_cooldown:
             self.frame += 1
@@ -159,9 +159,11 @@ class Fighter:
                 self.is_attacking = False
                 self.current_attack = 0
 
+    # Drawing character on the screen
     def draw(self):
         self.current_frame = self.animation_list[self.action][self.frame]
 
+        # facing direction logic
         if not self.facing_right:
             self.current_frame = pygame.transform.flip(self.current_frame, True, False).convert_alpha()
 

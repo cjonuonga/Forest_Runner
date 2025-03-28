@@ -13,7 +13,7 @@ SCREEN_HEIGHT = 600
 
 # Setting up the screen
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Forest Runner")
+pygame.display.set_caption("Forest Fighter")
 clock = pygame.time.Clock()
 
 # Loading background image
