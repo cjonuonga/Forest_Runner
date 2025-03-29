@@ -33,6 +33,8 @@ class Fighter:
         self.action = 0 # Action number represents animation type (run, jump etc.)
         self.c_x = 540 # Player positioning
         self.c_y = 369 # Player positioning
+        self.screen_width = self.window.get_width()
+        self.character_width = 234
         self.facing_right = True # Tracking facing position state
         self.is_jumping = False # Tracking jumping state
         self.jump_height = 10 # Initialize inital jump height
@@ -60,6 +62,8 @@ class Fighter:
         self.keys = pygame.key.get_pressed()
 
         self.action = 0
+
+
 
         # Attack 1,2 and 3 Functionality
         if not self.is_attacking:
@@ -142,6 +146,11 @@ class Fighter:
             self.facing_right = False
         
             
+        # Screen boundary functionality
+        if self.c_x < 0:
+            self.c_x = 0
+        if self.c_x > self.screen_width - self.character_width:
+            self.c_x = self.screen_width - self.character_width
 
         
         # Updating animation
