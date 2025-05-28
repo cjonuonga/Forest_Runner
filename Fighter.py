@@ -12,6 +12,7 @@ class Fighter:
         self.sprite_sheet_image_attack_1 = pygame.image.load("Forest_Runner_Sprites/Fighter/Attack_1.png").convert_alpha()
         self.sprite_sheet_image_attack_2 = pygame.image.load("Forest_Runner_Sprites/Fighter/Attack_2.png").convert_alpha()
         self.sprite_sheet_image_attack_3 = pygame.image.load("Forest_Runner_Sprites/Fighter/Attack_3.png").convert_alpha()
+        self.sprite_sheet_image_shield = pygame.image.load("Forest_Runner_Sprites/Fighter/Shield.png").convert_alpha()
 
         # Getting and setting image of character sprite in spritesheets
         self.sprite_sheet_idle = Spreadsheet.SpriteSheet(self.sprite_sheet_image_idle)
@@ -20,12 +21,13 @@ class Fighter:
         self.sprite_sheet_attack_1 = Spreadsheet.SpriteSheet(self.sprite_sheet_image_attack_1)
         self.sprite_sheet_attack_2 = Spreadsheet.SpriteSheet(self.sprite_sheet_image_attack_2)
         self.sprite_sheet_attack_3 = Spreadsheet.SpriteSheet(self.sprite_sheet_image_attack_3)
+        self.sprite_sheet_shield = Spreadsheet.SpriteSheet(self.sprite_sheet_image_shield)
 
         # Sprite list that holds action spritesheets
-        self.sprite_list = [self.sprite_sheet_idle, self.sprite_sheet_run, self.sprite_sheet_jump, self.sprite_sheet_attack_1, self.sprite_sheet_attack_2, self.sprite_sheet_attack_3]
+        self.sprite_list = [self.sprite_sheet_idle, self.sprite_sheet_run, self.sprite_sheet_jump, self.sprite_sheet_attack_1, self.sprite_sheet_attack_2, self.sprite_sheet_attack_3, self.sprite_sheet_shield]
 
         self.animation_list = [] # List that holds animations
-        self.animation_steps = [1, 8, 10, 4, 3, 4] # List that holds the amount of frames within each animation
+        self.animation_steps = [1, 8, 10, 4, 3, 4, 2] # List that holds the amount of frames within each animation
         self.last_update = pygame.time.get_ticks()
         self.animation_cooldown = 150 # Cooldown time between each animation
         self.frame = 0 # Init Frame counter so we start at the beginning of each animation
@@ -34,12 +36,13 @@ class Fighter:
         self.c_x = 540 # Player positioning
         self.c_y = 369 # Player positioning
         self.screen_width = self.window.get_width()
-        self.character_width = 234
+        self.character_width = 150
         self.facing_right = True # Tracking facing position state
         self.is_jumping = False # Tracking jumping state
         self.jump_height = 10 # Initialize inital jump height
         self.is_falling = False # Tracking falling state
         self.is_attacking = False # Tracking attack state
+        self.is_shielding = False
         self.current_attack = 0 # Tracking attack type (jab l, jab r, kick)
         self.max_frames = 0 # Tracking maximum amount of frames in animation
         self.attack_timer = 0 # Tracking amount of time for each attack animation
@@ -64,6 +67,17 @@ class Fighter:
         self.action = 0
 
 
+        # Shield Functionality
+# Shielding when holding V
+        if self.keys[pygame.K_v]:
+            self.is_shielding = True
+            self.action = 6
+            self.frame %= self.animation_steps[6]  # Loop shield animation
+        else:
+            self.is_shielding = False
+
+    
+        
 
         # Attack 1,2 and 3 Functionality
         if not self.is_attacking:
@@ -144,11 +158,11 @@ class Fighter:
             self.c_x -= self.speed
             self.action = 1
             self.facing_right = False
-        
+
             
         # Screen boundary functionality
-        if self.c_x < 0:
-            self.c_x = 0
+        if self.c_x < -80:
+            self.c_x = -80
         if self.c_x > self.screen_width - self.character_width:
             self.c_x = self.screen_width - self.character_width
 
