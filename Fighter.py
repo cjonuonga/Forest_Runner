@@ -1,5 +1,5 @@
 import pygame
-import Spreadsheet
+import Spritesheet
 
 class Fighter:
     def __init__(self, window):
@@ -15,13 +15,13 @@ class Fighter:
         self.sprite_sheet_image_shield = pygame.image.load("Forest_Runner_Sprites/Fighter/Shield.png").convert_alpha()
 
         # Getting and setting image of character sprite in spritesheets
-        self.sprite_sheet_idle = Spreadsheet.SpriteSheet(self.sprite_sheet_image_idle)
-        self.sprite_sheet_run = Spreadsheet.SpriteSheet(self.sprite_sheet_image_run)
-        self.sprite_sheet_jump = Spreadsheet.SpriteSheet(self.sprite_sheet_image_jump)
-        self.sprite_sheet_attack_1 = Spreadsheet.SpriteSheet(self.sprite_sheet_image_attack_1)
-        self.sprite_sheet_attack_2 = Spreadsheet.SpriteSheet(self.sprite_sheet_image_attack_2)
-        self.sprite_sheet_attack_3 = Spreadsheet.SpriteSheet(self.sprite_sheet_image_attack_3)
-        self.sprite_sheet_shield = Spreadsheet.SpriteSheet(self.sprite_sheet_image_shield)
+        self.sprite_sheet_idle = Spritesheet.SpriteSheet(self.sprite_sheet_image_idle)
+        self.sprite_sheet_run = Spritesheet.SpriteSheet(self.sprite_sheet_image_run)
+        self.sprite_sheet_jump = Spritesheet.SpriteSheet(self.sprite_sheet_image_jump)
+        self.sprite_sheet_attack_1 = Spritesheet.SpriteSheet(self.sprite_sheet_image_attack_1)
+        self.sprite_sheet_attack_2 = Spritesheet.SpriteSheet(self.sprite_sheet_image_attack_2)
+        self.sprite_sheet_attack_3 = Spritesheet.SpriteSheet(self.sprite_sheet_image_attack_3)
+        self.sprite_sheet_shield = Spritesheet.SpriteSheet(self.sprite_sheet_image_shield)
 
         # Sprite list that holds action spritesheets
         self.sprite_list = [self.sprite_sheet_idle, self.sprite_sheet_run, self.sprite_sheet_jump, self.sprite_sheet_attack_1, self.sprite_sheet_attack_2, self.sprite_sheet_attack_3, self.sprite_sheet_shield]

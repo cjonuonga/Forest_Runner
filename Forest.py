@@ -2,7 +2,7 @@ import pygame
 import time
 import random
 import sys
-import Spreadsheet
+import Spritesheet
 from Fighter import Fighter
 
 # Initializing Pygame
